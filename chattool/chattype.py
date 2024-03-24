@@ -492,12 +492,12 @@ async def _async_stream_responses( api_key:str
                 # read the json string
                 try:
                     # wrap the response
-                    resp = Resp(json.loads(strline))
-                    # stop if the response is finished
-                    if resp.finish_reason == 'stop': break
-                    # deal with the message
-                    if 'content' not in resp.delta: continue
-                    yield resp
+                    resp = json.loads(strline)
+                    if not 'choices' in resp: continue
+                    if len(resp['choices']) == 0: continue
+                    if 'delta' not in resp['choices'][0]: continue
+                    if 'content' not in resp['choices'][0]['delta']: continue
+                    yield Resp(resp)
                 except Exception as e:
                     print(f"Error: {e}, line: {strline}")
                     break
